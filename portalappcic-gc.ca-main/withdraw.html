@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="https://ircc-tracker-suivi.apps.cic.gc.ca/favicon.png">
+    <title>Withdraw</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 29px;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+        .tab.active {
+            background-color: #fff;
+            border-bottom: 2px solid #000;
+        }
+        .card {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .header svg {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #ccc;
+            border: none;
+            cursor: pointer;
+        }
+        .warning {
+            color: red;
+            font-size: 0.8em;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .balance {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .nav-container {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .top-links {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .top-links a {
+            color: #284162;
+            text-decoration: underline;
+            font-size: 14px;
+        }
+        .gov-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .flag {
+            width: 30px;
+            height: auto;
+        }
+        .gov-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .gov-text span {
+            font-size: 14px;
+            color: #333;
+        }
+
+        #popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        .custom-table {
+            margin-top: 20px;
+        }
+        .custom-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .custom-table th, .custom-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .custom-table th {
+            background-color: #f0f0f0;
+        }
+        .header-actions-container {
+            display: flex;
+            justify-content: end;
+            align-items: center;
+        }
+        .brand {
+            padding: 32px 0 12px 25px;
+        }
+        #canada-home-img {
+            max-width: 100%;
+        }
+        .container {
+            max-width: 1170px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        hr {
+            border-top: 2px solid #26374a;
+            margin: 0;
+            opacity: 1;
+        }
+        .page-footer a {
+            font-size: 14px;
+            color: #284262;
+            text-decoration: none;
+        }
+        .page-footer .button-report {
+            font-size: 16px;
+            width: 360px;
+            margin-top: 2em;
+        }
+        .page-footer-nav-items {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .page-footer-nav-items li {
+            margin: 0 1rem;
+        }
+        .page-footer-nav-items li:first-child {
+            list-style: none;
+        }
+        .date-modified {
+            margin-top: 2em;
+        }
+        .page-footer-container {
+            border-top: 2px solid black;
+            background-color: #f3f4f6;
+            line-height: 65px;
+            width: 100%;
+        }
+        .page-footer-content {
+            display: flex;
+            margin-top: 1.5em;
+            padding-bottom: 1em;
+        }
+        .page-footer-image-container {
+            flex: auto;
+            text-align: end;
+            align-self: flex-end;
+            padding-right: 53px;
+        }
+        .logo {
+            height: 40px;
+            margin-top: -27px;
+            margin-right: 3px;
+        }
+        .button-report:focus-within {
+            outline: solid;
+        }
+        @media only screen and (max-width: 768px) {
+            .page-footer .button-report {
+                width: 100%;
+            }
+        }
+ 
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div class="container">
+            <div class="row">
+                <div class="brand col-xs-9 col-md-4 col-sm-6 col">
+                    <a id="canada-home-img-link" target="_blank" href="application.html">
+                        <img id="canada-home-img" src="Sign%20in%20to%20your%20Application%20Status%20Tracker%20account_files/canada_logo_header_en.svg" alt="Government of Canada header logo">
+                    </a>
+                </div>
+                <div class="header-actions-container col">
+                </div>
+            </div>
+        </div>
+        <hr>
+        <nav property="breadcrumb" role="navigation" aria-label="navigation">
+            <div class="container">
+                <div class="container">
+                    <ol class="breadcrumb">
+                    </ol>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="3" y1="9" x2="21" y2="9"></line>
+        </svg>
+        <h1>Portal Balance</h1>
+    </div>
+    <h2>Balance Overview</h2>
+    <p>Here's a quick view of your balance</p>
+    <div class="tabs">
+        <div class="tab" onclick="window.location.href = 'deposit.html'" id="depositTab">Deposit</div>
+        <div class="tab active" id="withdrawTab">Withdraw</div>
+    </div>
+    <div class="card">
+        <div class="form-group">
+            <label for="binanceId">Binance ID</label>
+            <input type="number" id="binanceId" placeholder="Input your Binance Wallet Address" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+        </div>
+        <div class="form-group">
+            <label for="binanceName">Binance Name</label>
+            <input type="text" id="binanceName" placeholder="Input your Binance Wallet Name">
+        </div>
+        <div class="form-group">
+            <label for="walletName">Wallet Name</label>
+            <input type="text" id="walletName" placeholder="Input your Wallet Name">
+        </div>
+        <div class="form-group">
+            <label for="amount">Amount to Withdraw</label>
+            <input type="number" id="amount" min="0" step="0.01" oninput="this.value = this.value.replace(/[^0-9.]/g, ''); if(this.value.split('.').length > 2) this.value = this.value.replace(/\.+$/, '');" placeholder="Enter amount to withdraw" required>
+        </div>
+        <button type="button" onclick="submitWithdrawal()">Submit</button>
+        <p class="warning">Withdrawal may take a maximum of 3 days before reflecting</p>
+    </div>
+    <div class="card">
+        <h3>Account Balance</h3>
+        <p>Your Account Balance is</p>
+        <div class="balance" id="userBalance">$0.00</div>
+    </div>
+
+    <div id="withdrawalList"></div>
+
+    <div id="overlay"></div>
+    <div id="popup">
+        <h3 id="popup-message"></h3>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script>
+        let currentUser = null;
+
+        async function loadUserBalance() {
+            try {
+                if (!currentUser) return;
+
+                const { data: userData, error } = await supabase
+                    .from('users')
+                    .select('balance')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (error) throw error;
+
+                if (userData) {
+                    document.getElementById('userBalance').textContent = formatCurrency(userData.balance);
+                }
+            } catch (error) {
+                console.error('Error loading balance:', error);
+                document.getElementById('userBalance').textContent = 'Error loading balance';
+            }
+        }
+
+        async function loadWithdrawals() {
+            try {
+                if (!currentUser) return;
+
+                const { data: withdrawals, error } = await supabase
+                    .from('withdrawals')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('date_time', { ascending: false });
+
+                if (error) throw error;
+
+                const withdrawalList = document.getElementById('withdrawalList');
+                withdrawalList.innerHTML = '';
+
+                if (withdrawals && withdrawals.length > 0) {
+                    const table = document.createElement('table');
+                    table.className = 'custom-table';
+                    
+                    // Create table header
+                    const thead = document.createElement('thead');
+                    thead.innerHTML = `
+                        <tr>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    `;
+                    table.appendChild(thead);
+
+                    // Create table body
+                    const tbody = document.createElement('tbody');
+                    withdrawals.forEach(withdrawal => {
+                        const tr = document.createElement('tr');
+                        const date = new Date(withdrawal.date_time);
+                        tr.innerHTML = `
+                            <td>${formatCurrency(withdrawal.amount)}</td>
+                            <td>${withdrawal.status}</td>
+                            <td>${date.toLocaleDateString()} ${date.toLocaleTimeString()}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                    table.appendChild(tbody);
+                    withdrawalList.appendChild(table);
+                } else {
+                    withdrawalList.innerHTML = '<p>No withdrawals found.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading withdrawals:', error);
+                withdrawalList.innerHTML = '<p>Error loading withdrawals.</p>';
+            }
+        }
+
+        async function submitWithdrawal() {
+            try {
+                if (!currentUser) {
+                    showPopup('Please sign in to make a withdrawal');
+                    return;
+                }
+
+                const amountInput = document.getElementById('amount');
+                const binanceIdInput = document.getElementById('binanceId');
+                const binanceNameInput = document.getElementById('binanceName');
+                const walletNameInput = document.getElementById('walletName');
+                const amount = parseFloat(amountInput.value);
+
+                // Validate inputs
+                if (!binanceIdInput.value || !binanceNameInput.value || !walletNameInput.value) {
+                    showPopup('Please fill in all fields');
+                    return;
+                }
+
+                if (isNaN(amount) || amount <= 0) {
+                    showPopup('Please enter a valid amount');
+                    return;
+                }
+
+                // Get current balance
+                const { data: userData, error: balanceError } = await supabase
+                    .from('users')
+                    .select('balance')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (balanceError) throw balanceError;
+
+                if (amount > userData.balance) {
+                    showPopup('Insufficient balance');
+                    return;
+                }
+
+                // Create withdrawal record
+                const { data: withdrawal, error: withdrawalError } = await supabase
+                    .from('withdrawals')
+                    .insert([
+                        {
+                            user_id: currentUser.id,
+                            amount: amount,
+                            status: 'Pending',
+                            date_time: new Date().toISOString(),
+                            binance_id: binanceIdInput.value,
+                            binance_name: binanceNameInput.value,
+                            wallet_name: walletNameInput.value
+                        }
+                    ])
+                    .select()
+                    .single();
+
+                if (withdrawalError) throw withdrawalError;
+
+                // Update user balance
+                const newBalance = userData.balance - amount;
+                const { error: updateError } = await supabase
+                    .from('users')
+                    .update({ balance: newBalance })
+                    .eq('id', currentUser.id);
+
+                if (updateError) throw updateError;
+
+                // Clear form and reload data
+                amountInput.value = '';
+                binanceIdInput.value = '';
+                binanceNameInput.value = '';
+                walletNameInput.value = '';
+                await Promise.all([loadUserBalance(), loadWithdrawals()]);
+                showPopup('Withdrawal request submitted successfully');
+
+            } catch (error) {
+                console.error('Error submitting withdrawal:', error);
+                showPopup('Error submitting withdrawal. Please try again.');
+            }
+        }
+
+        function showPopup(message) {
+            const popup = document.createElement('div');
+            popup.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
+            popup.textContent = message;
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 3000);
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        }
+
+        async function signOut() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize page
+        async function initializePage() {
+            // Check authentication
+            currentUser = await window.checkApplicationAuth();
+            if (!currentUser) return;
+
+            // Load all data
+            await Promise.all([
+                loadUserBalance(),
+                loadWithdrawals()
+            ]);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+    <app-footer>
+        <footer class="page-footer">
+            <div class="container">
+                <dl class="date-modified">Version number: 1.2.1</dl>
+            </div>
+            <div class="page-footer-container">
+                <div class="container page-footer-content">
+                    <div class="page-footer-image-container">
+                        <img src="Sign%20in%20to%20your%20Application%20Status%20Tracker%20account_files/canada_logo_footer.svg" class="logo" alt="Symbol of the Government of Canada">
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </app-footer>
+</body>
+</html>

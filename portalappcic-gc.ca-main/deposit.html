@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="https://ircc-tracker-suivi.apps.cic.gc.ca/favicon.png">
+    <title>Portal Balance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header svg {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .custom-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+}
+
+.custom-table th, .custom-table td {
+    border: 0.2px solid black;
+    text-align: center;
+    padding: 10px;
+    
+}
+
+.custom-table th {
+    background-color: white ;
+    color: black;
+    font-weight: bold;
+}
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+        .tab.active {
+            background-color: #fff;
+            border-bottom: 2px solid #000;
+        }
+        .card {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .under-review {
+            background-color: #ffd700;
+            color: #000;
+            padding: 5px;
+            display: inline-block;
+            font-size: 0.8em;
+        }
+        .balance {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .nav-container {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .top-links {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .top-links a {
+            color: #284162;
+            text-decoration: underline;
+            font-size: 14px;
+        }
+        .gov-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .flag {
+            width: 30px;
+            height: auto;
+        }
+        .gov-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .gov-text span {
+            font-size: 14px;
+            color: #333;
+        }
+        .header-actions-container {
+            display: flex;
+            justify-content: end;
+            align-items: center;
+        }
+        .brand {
+            padding: 32px 0 12px 25px;
+        }
+        #canada-home-img {
+            max-width: 100%;
+        }
+        .container {
+            max-width: 1170px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        hr {
+            border-top: 2px solid #26374a;
+            margin: 0;
+            opacity: 1;
+        }
+        /* Footer styles */
+        .page-footer a {
+            font-size: 14px;
+            color: #284262;
+            text-decoration: none;
+        }
+        .page-footer .button-report {
+            font-size: 16px;
+            width: 360px;
+            margin-top: 2em;
+        }
+        .page-footer-nav-items {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .page-footer-nav-items li {
+            margin: 0 1rem;
+        }
+        .page-footer-nav-items li:first-child {
+            list-style: none;
+        }
+        .date-modified {
+            margin-top: 2em;
+        }
+        .page-footer-container {
+            border-top: 2px solid black;
+            background-color: #f3f4f6;
+            line-height: 65px;
+            width: 100%;
+        }
+        .page-footer-content {
+            display: flex;
+            margin-top: 1.5em;
+            padding-bottom: 1em;
+        }
+        .page-footer-image-container {
+            flex: auto;
+            text-align: end;
+            align-self: flex-end;
+            padding-right: 53px;
+        }
+        .logo {
+            height: 40px;
+            margin-top: -27px;
+            margin-right: 3px;
+        }
+        .button-report:focus-within {
+            outline: solid;
+        }
+        @media only screen and (max-width: 768px) {
+            .page-footer .button-report {
+                width: 100%;
+            }
+        }
+        .details-container {
+            margin: 15px 0;
+        }
+        .details-container p {
+            font-size: 1.17em; /* Same size as h3 */
+            margin: 10px 0;
+        }
+ 
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div class="container">
+            <div class="row">
+                <div class="brand col-xs-9 col-md-4 col-sm-6 col">
+                    <a id="canada-home-img-link" target="_blank" href="application.html">
+                        <img id="canada-home-img" src="Sign%20in%20to%20your%20Application%20Status%20Tracker%20account_files/canada_logo_header_en.svg" alt="Government of Canada header logo">
+                    </a>
+                </div>
+                <div class="header-actions-container col">
+                </div>
+            </div>
+        </div>
+        <hr>
+        <nav property="breadcrumb" role="navigation" aria-label="navigation">
+            <div class="container">
+                <div class="container">
+                    <ol class="breadcrumb">
+                    </ol>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="3" y1="9" x2="21" y2="9"></line>
+        </svg>
+        <h1>Portal Balance</h1>
+    </div>
+    <h2>Balance Overview</h2>
+    <p>Here's a quick view of your balance</p>
+    <div class="tabs">
+        <div class="tab active" id="depositTab">Deposit</div>
+        <div class="tab" onclick="window.location.href = 'withdraw.html'" id="withdrawalTab">Withdraw</div>
+    </div>
+    <div class="card" id="depositCard">
+        <h3>Please Deposit into the following account</h3>
+        <div class="details-container">
+            <p><strong>Binance ID:</strong> <span id="binanceId">Loading...</span></p>
+            <p><strong>Binance Name:</strong> <span id="binanceName">Loading...</span></p>
+            <p><strong>Wallet Name:</strong> <span id="walletName">Loading...</span></p>
+        </div>
+<!-- <button onclick="window.location.href='depositamount.html'" style="background-color: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer;">Deposit</button> -->    
+</div>
+    <div class="card">
+        <h3>Account Balance</h3>
+        <p>Your Account Balance is</p>
+        <div class="balance" id="balance">Loading...</div>      
+    </div>
+    <div id="depositList"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script>
+        let currentUser = null;
+
+        // Load wallet info
+        async function loadWalletInfo() {
+            try {
+                const { data, error } = await supabase
+                    .from('deposit_details')
+                    .select('*')
+                    .limit(1)
+                    .single();
+
+                if (error) throw error;
+
+                if (data) {
+                    document.getElementById('binanceId').textContent = data.binance_id;
+                    document.getElementById('binanceName').textContent = data.binance_name;
+                    document.getElementById('walletName').textContent = data.wallet_name;
+                }
+            } catch (error) {
+                console.error('Error loading wallet info:', error);
+                document.getElementById('binanceId').textContent = 'Error loading data';
+                document.getElementById('binanceName').textContent = 'Error loading data';
+                document.getElementById('walletName').textContent = 'Error loading data';
+            }
+        }
+
+        // Load user balance
+        async function loadUserBalance() {
+            try {
+                if (!currentUser) return;
+
+                const { data: userData, error } = await supabase
+                    .from('users')
+                    .select('balance')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (error) throw error;
+
+                if (userData) {
+                    const formattedBalance = new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }).format(userData.balance);
+                    document.getElementById('balance').textContent = formattedBalance;
+                }
+            } catch (error) {
+                console.error('Error loading balance:', error);
+                document.getElementById('balance').textContent = 'Error loading balance';
+            }
+        }
+
+        // Load deposits
+        async function loadDeposits() {
+            try {
+                if (!currentUser) return;
+
+                const { data: deposits, error } = await supabase
+                    .from('deposits')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('date_time', { ascending: false });
+
+                if (error) throw error;
+
+                const depositList = document.getElementById('depositList');
+                depositList.innerHTML = '';
+
+                if (deposits && deposits.length > 0) {
+                    const table = document.createElement('table');
+                    table.className = 'custom-table';
+                    
+                    // Create table header
+                    const thead = document.createElement('thead');
+                    thead.innerHTML = `
+                        <tr>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    `;
+                    table.appendChild(thead);
+
+                    // Create table body
+                    const tbody = document.createElement('tbody');
+                    deposits.forEach(deposit => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>$${parseFloat(deposit.amount).toFixed(2)}</td>
+                            <td>${deposit.status}</td>
+                            <td>${new Date(deposit.date_time).toLocaleDateString()}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                    table.appendChild(tbody);
+                    depositList.appendChild(table);
+                } else {
+                    depositList.innerHTML = '<p>No deposits found.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading deposits:', error);
+                document.getElementById('depositList').innerHTML = '<p>Error loading deposits.</p>';
+            }
+        }
+
+        async function signOut() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize page
+        async function initializePage() {
+            // Check authentication
+            currentUser = await window.checkApplicationAuth();
+            if (!currentUser) return;
+
+            // Load all data
+            await Promise.all([
+                loadWalletInfo(),
+                loadUserBalance(),
+                loadDeposits()
+            ]);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+    <app-footer>
+        <footer class="page-footer">
+            <div class="container">
+                <dl class="date-modified">Version number: 1.2.1</dl>
+            </div>
+            <div class="page-footer-container">
+                <div class="container page-footer-content">
+                    <div class="page-footer-image-container">
+                        <img src="Sign%20in%20to%20your%20Application%20Status%20Tracker%20account_files/canada_logo_footer.svg" class="logo" alt="Symbol of the Government of Canada">
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </app-footer>
+</body>
+</html>

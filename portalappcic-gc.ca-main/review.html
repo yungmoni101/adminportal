@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Status Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #f5f5f5;
+        }
+
+        .header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .nav-container {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .top-links {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .top-links a {
+            color: #284162;
+            text-decoration: underline;
+            font-size: 14px;
+        }
+
+        .gov-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .flag {
+            width: 30px;
+            height: auto;
+        }
+
+        .gov-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .gov-text span {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .welcome {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .welcome h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .status-card {
+            background: white;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .details-grid dt {
+            color: #666; 
+        }
+
+        .status-list {
+            padding: 20px; 
+        }
+
+        .status-item {
+            margin-bottom: 20px; 
+            display: flex; 
+            gap: 10px; 
+        }
+
+        .checkbox {
+            width: 20px; 
+            height: 20px; 
+            border: 2px solid #000; 
+            position: relative; 
+            display: inline-block; 
+			cursor:pointer; /* Added cursor pointer */
+		}
+
+		.checkbox.checked::after { /* Change to checked state */
+			content:"✓"; 
+			position:absolute; 
+			top:50%; 
+			left:50%; 
+			transform:translate(-50%, -50%); 
+			font-size:14px; 
+		}
+
+		.status-text { 
+			font-size :14 px; 
+			flex :1; 
+		}
+
+		.warning { 
+			color:#f44336; 
+			font-size :14 px; 
+			margin-top :10 px; 
+		}
+    </style>
+</head>
+<body>
+    <nav class="nav-container">
+        <div class="top-links">
+            <a href="#" onclick="signOut()">Sign Out</a>
+            <a href="deposit.html">Balance</a>
+        </div>
+        <div class="gov-info">
+           <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 24'%3E%3Crect width='48' height='24' fill='%23f00'/%3E%3Crect x='12' y='0' width='24' height='24' fill='white'/%3E%3Cpath d='M24 3 L26 9 L32 9 L27 13 L29 19 L24 15 L19 19 L21 13 L16 9 L22 9 Z' fill='%23f00'/%3E%3C/svg%3E" alt="Canadian Flag" class="flag">
+           <div class="gov-text">
+               <span>Government<br>of Canada</span>
+           </div>
+       </div>
+    </nav>
+
+    <!-- First Screen -->
+    <div class="header">
+         <h1>Application Status Tracker</h1>
+    </div>
+
+    <div class="welcome">
+         <h2>Hello <span id="userName">...</span></h2>
+         <p>Here's a quick overview of your Work permit application</p>
+    </div>
+
+    <main>
+        <div class="review-message" style="text-align: center; padding: 50px; margin-top: 50px;">
+            <h2 style="color: #333; margin-bottom: 20px;">Account Under Review</h2>
+            <p style="color: #666; font-size: 16px;">Your account is currently under review. Please check back later.</p>
+        </div>
+    </main>
+
+     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+     <script src="js/supabase.js"></script>
+     <script>
+        async function loadApplicationData() {
+            try {
+                // Get user data from session storage
+                const userId = sessionStorage.getItem('userId');
+                const userName = sessionStorage.getItem('userName');
+
+                if (!userId) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                // Display user name
+                document.getElementById('userName').textContent = userName || 'User';
+
+                // Get application data
+                const { data: applicationData, error: applicationError } = await supabase
+                    .from('applications')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .single();
+
+                if (applicationError) {
+                    console.error('Error fetching application:', applicationError);
+                    return;
+                }
+
+                if (applicationData) {
+                    console.log('Application data:', applicationData);
+                    // Update application details using the correct column names
+                    document.getElementById('applicationStatus').textContent = applicationData.application_status || 'Pending';
+                    document.getElementById('applicationType').textContent = applicationData.application_type || 'Work Permit';
+                    document.getElementById('applicationNumber').textContent = applicationData.application_id || 'N/A';
+                    document.getElementById('dateReceived').textContent = new Date(applicationData.application_date).toLocaleDateString();
+                    document.getElementById('destination').textContent = applicationData.destination || 'Canada';
+                }
+
+                // Get checklist data
+                const { data: checklistData, error: checklistError } = await supabase
+                    .from('application_checklists')
+                    .select('*')
+                    .eq('user_id', userId)
+                    .single();
+
+                if (checklistError) {
+                    console.error('Error fetching checklist:', checklistError);
+                    return;
+                }
+
+                if (checklistData) {
+                    console.log('Checklist data:', checklistData);
+                    // Update checklist items
+                    document.getElementById('eligibilityCheck').classList.toggle('checked', checklistData.eligibility_checked);
+                    document.getElementById('medicalCheck').classList.toggle('checked', checklistData.medical_checked);
+                    document.getElementById('documentCheck').classList.toggle('checked', checklistData.document_checked);
+                    document.getElementById('interviewCheck').classList.toggle('checked', checklistData.interview_checked);
+                    document.getElementById('fundsCheck').classList.toggle('checked', checklistData.proof_of_funds_checked);
+                }
+
+            } catch (error) {
+                console.error('Error loading application data:', error);
+                alert('Error loading application data. Please try again later.');
+            }
+        }
+
+        async function signOut() {
+            // Clear session storage
+            sessionStorage.clear();
+            // Redirect to login page
+            window.location.href = 'index.html';
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadApplicationData);
+     </script>
+</body>
+</html>

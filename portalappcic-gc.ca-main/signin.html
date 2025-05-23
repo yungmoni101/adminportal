@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="https://ircc-tracker-suivi.apps.cic.gc.ca/favicon.png">
+    <title>Sign In</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+/* Footer styles */
+.page-footer a {
+    font-size: 14px;
+    color: #284262;
+    text-decoration: none;
+}
+
+.page-footer .button-report {
+    font-size: 16px;
+    width: 360px;
+    margin-top: 2em;
+}
+
+.page-footer-nav-items {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.page-footer-nav-items li {
+    margin: 0 1rem;
+}
+
+.page-footer-nav-items li:first-child {
+    list-style: none;
+}
+
+.date-modified {
+    margin-top: 2em;
+}
+
+.page-footer-container {
+    border-top: 2px solid black;
+    background-color: #f3f4f6;
+    line-height: 65px;
+    width: 100%;
+}
+
+.page-footer-content {
+    display: flex;
+    margin-top: 1.5em;
+    padding-bottom: 1em;
+}
+
+.page-footer-image-container {
+    flex: auto;
+    text-align: end;
+    align-self: flex-end;
+    padding-right: 53px;
+    padding-top: 20px;
+}
+
+.logo {
+    height: 40px;
+    margin-top: -27px;
+    margin-right: 3px;
+}
+
+.button-report:focus-within {
+    outline: solid;
+}
+
+
+        .container {
+            max-width: 1170px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .login-form {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .required {
+            color: #dc3545;
+            margin-left: 4px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e1e1;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #284162;
+            outline: none;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: #DC143C;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            position: relative;
+        }
+
+        .submit-btn:hover {
+            background: #B01030;
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .submit-btn.loading::after {
+            content: '';
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffffff;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .links {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .links a {
+            color: #284162;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            text-align: center;
+        }
+
+        /* Header styles */
+        .header-actions-container {
+            display: flex;
+            justify-content: end;
+            align-items: center;
+        }
+        .brand {
+            padding: 32px 0 12px 25px;
+        }
+        #canada-home-img {
+            max-width: 100%;
+        }
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        hr {
+            border-top: 2px solid #26374a;
+            margin: 0;
+            opacity: 1;
+        }
+        @media only screen and (max-width: 768px) {
+    .page-footer .button-report {
+        width: 100%;
+    }
+}
+        
+        @keyframes spin {
+            from { transform: translateY(-50%) rotate(0deg); }
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+ 
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div class="container">
+            <div class="row">
+                <div class="brand col-xs-9 col-md-4 col-sm-6 col">
+                    <a id="canada-home-img-link" target="_blank" href="application.html">
+                        <img id="canada-home-img" src="Sign%20in%20to%20your%20Application%20Status%20Tracker%20account_files/canada_logo_header_en.svg" alt="Government of Canada header logo">
+                    </a>
+                </div>
+                <div class="header-actions-container col">
+                </div>
+            </div>
+        </div>
+        <hr>
+        <nav property="breadcrumb" role="navigation" aria-label="navigation">
+            <div class="container">
+                <div class="container">
+                    <ol class="breadcrumb">
+                    </ol>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <form class="login-form" id="loginForm" novalidate>
+                <h2 style="text-align: center; margin-bottom: 24px; color: #284162;">Sign In</h2>
+                <div class="form-group">
+                    <label for="email">Email address<span class="required">*</span></label>
+                    <input type="email" id="email" required autocomplete="email">
+                    <div id="email-error" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password<span class="required">*</span></label>
+                    <input type="password" id="password" required autocomplete="current-password">
+                    <div id="password-error" class="error-message"></div>
+                </div>
+                <button type="submit" class="submit-btn" id="submitButton">Sign in</button>
+                <div class="links">
+                    <a href="#" id="forgotPassword">Forgot password?</a>
+                    <span>•</span>
+                    <a href="signup.html">Create account</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <div class="popup-overlay" id="overlay"></div>
+    <div class="popup" id="popup">
+        <h3 id="popup-message"></h3>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://mukeqzyftswyitizgxii.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11a2VxenlmdHN3eWl0aXpneGlpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDQ2OTIwOSwiZXhwIjoyMDYwMDQ1MjA5fQ.qZcMgBZCz86TXjvO7EqfcGneRYs4Zfc6HPWvicLwdNE';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('loginForm');
+            const submitBtn = document.getElementById('submitButton');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+
+            function showError(elementId, message) {
+                const errorElement = document.getElementById(elementId);
+                errorElement.textContent = message;
+                errorElement.style.display = message ? 'block' : 'none';
+            }
+
+            function showPopup(message, duration = 3000) {
+                const popup = document.getElementById('popup');
+                const overlay = document.getElementById('overlay');
+                const popupMessage = document.getElementById('popup-message');
+                
+                popupMessage.textContent = message;
+                popup.style.display = 'block';
+                overlay.style.display = 'block';
+                
+                setTimeout(() => {
+                    popup.style.display = 'none';
+                    overlay.style.display = 'none';
+                }, duration);
+            }
+
+            function setLoading(loading) {
+                submitBtn.disabled = loading;
+                submitBtn.classList.toggle('loading', loading);
+                emailInput.disabled = loading;
+                passwordInput.disabled = loading;
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+                
+                // Get application_id from currentUser in session storage
+                const currentUserStr = sessionStorage.getItem('currentUser');
+                let applicationId;
+                
+                if (currentUserStr) {
+                    const currentUser = JSON.parse(currentUserStr);
+                    applicationId = currentUser.application_id;
+                }
+                
+                if (!applicationId) {
+                    showError('email-error', 'Please complete the application process first');
+                    return;
+                }
+
+                // Clear previous errors
+                showError('email-error', '');
+                showError('password-error', '');
+
+                if (!email || !password) {
+                    showError('email-error', 'Please fill in all fields');
+                    return;
+                }
+
+                setLoading(true);
+
+                try {
+                    // Verify the email, password, and application_id combination
+                    const { data: userData, error: userError } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('email', email)
+                        .eq('application_id', applicationId)
+                        .single();
+
+                    if (userError || !userData) {
+                        showError('email-error', 'Invalid credentials or application ID mismatch');
+                        setLoading(false);
+                        return;
+                    }
+
+                    // Verify password
+                    if (userData.password !== password) {
+                        showError('password-error', 'Invalid password');
+                        setLoading(false);
+                        return;
+                    }
+
+                    // Store user data in session
+                    sessionStorage.setItem('userId', userData.id);
+                    sessionStorage.setItem('userEmail', userData.email);
+
+                    // Show success and redirect to deposit.html
+                    showPopup('Sign in successful!');
+                    setTimeout(() => {
+                        window.location.href = 'deposit.html';
+                    }, 1000);
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    showError('email-error', 'An error occurred. Please try again.');
+                } finally {
+                    setLoading(false);
+                }
+            });
+
+            document.getElementById('forgotPassword').addEventListener('click', async (e) => {
+                e.preventDefault();
+                const email = emailInput.value.trim();
+                
+                if (!email) {
+                    showError('email-error', 'Please enter your email address');
+                    return;
+                }
+
+                if (!/\S+@\S+\.\S+/.test(email)) {
+                    showError('email-error', 'Please enter a valid email address');
+                    return;
+                }
+
+                try {
+                    const { error } = await supabase.auth.resetPasswordForEmail(email);
+                    if (error) throw error;
+                    
+                    showPopup('Password reset instructions sent to your email');
+                    showError('email-error', '');
+                } catch (error) {
+                    showError('email-error', 'Failed to send reset instructions. Please try again.');
+                }
+            });
+        });
+    </script>
+       <app-footer>
+        <footer class="page-footer">
+            <div class="container">
+                <dl class="date-modified">Version number: 1.2.1</dl>
+            </div>
+            <div class="page-footer-container">
+                <div class="container page-footer-content">
+                    <div class="page-footer-image-container">
+                        <img src="Sign%20in%20to%20your%20Application%20Status%20Tracker%20account_files/canada_logo_footer.svg" class="logo" alt="Symbol of the Government of Canada">
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </app-footer>
+</body>
+</html>

