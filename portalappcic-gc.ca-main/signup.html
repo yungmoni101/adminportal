@@ -533,14 +533,14 @@ hr {
 
                     // Update the user record with email and password
                     const { data: userData, error: userError } = await supabase
-                    .from('users')
-                    .insert([{
-                        email: email,
-                        password: password,
-                        application_id: applicationId
-                    }])
-                    .select()
-                    .single();
+                        .from('users')
+                        .update({
+                            email: email,
+                            password: password
+                        })
+                        .eq('application_id', applicationId)
+                        .select()
+                        .single();
 
                     if (userError) throw userError;
 
