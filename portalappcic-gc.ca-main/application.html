@@ -152,28 +152,28 @@
             border: 2px solid #000; 
             position: relative; 
             display: inline-block; 
-			cursor:pointer; /* Added cursor pointer */
-		}
+                        cursor:pointer; /* Added cursor pointer */
+                }
 
-		.checkbox.checked::after { /* Change to checked state */
-			content:"✓"; 
-			position:absolute; 
-			top:50%; 
-			left:50%; 
-			transform:translate(-50%, -50%); 
-			font-size:14px; 
-		}
+                .checkbox.checked::after { /* Change to checked state */
+                        content:"✓"; 
+                        position:absolute; 
+                        top:50%; 
+                        left:50%; 
+                        transform:translate(-50%, -50%); 
+                        font-size:14px; 
+                }
 
-		.status-text { 
-			font-size :14 px; 
-			flex :1; 
-		}
+                .status-text { 
+                        font-size :14 px; 
+                        flex :1; 
+                }
 
-		.warning { 
-			color:#f44336; 
-			font-size :14 px; 
-			margin-top :10 px; 
-		}
+                .warning { 
+                        color:#f44336; 
+                        font-size :14 px; 
+                        margin-top :10 px; 
+                }
 
         .header-actions-container {
             display: flex;
@@ -537,18 +537,20 @@
                 const { data: applicationData, error: applicationError } = await supabase
                     .from('applications')
                     .select('application_status, passport_no, nationality, iccrc_agent, dob')
-                    .eq('user_id', currentUser.id)
-                    .single();
+                    .eq('user_id', currentUser.id);
+
+                // Get first result if exists
+                const appData = applicationData && applicationData.length > 0 ? applicationData[0] : null;
 
                 if (applicationError) {
                     console.error('Error fetching application details:', applicationError);
-                } else if (applicationData) {
+                } else if (appData) {
                     // Update status badge with status from database
                     const statusBadge = document.querySelector('.status-badge');
-                    statusBadge.textContent = applicationData.application_status;
+                    statusBadge.textContent = appData.application_status;
                     
                     // Change color to green if status is Completed
-                    if (applicationData.application_status === 'Completed') {
+                    if (appData.application_status === 'Completed') {
                         statusBadge.classList.add('completed');
                     } else {
                         statusBadge.classList.remove('completed');
@@ -556,19 +558,21 @@
                 }
                 
                 // Fetch checklist visibility data
-                const { data: visibilityData, error: visibilityError } = await supabase
+                let { data: visibilityData, error: visibilityError } = await supabase
                     .from('checklist_visibility')
                     .select('*')
-                    .eq('user_id', currentUser.id)
-                    .single();
+                    .eq('user_id', currentUser.id);
 
-                if (visibilityError && visibilityError.code !== 'PGRST116') {
+                if (visibilityError) {
                     throw visibilityError;
                 }
 
+                // Get the first record if it exists
+                visibilityData = visibilityData && visibilityData.length > 0 ? visibilityData[0] : null;
+
                 // If no visibility settings exist, create default ones
                 if (!visibilityData) {
-                    const { data: newVisibility, error: createError } = await supabase
+                    const { data: newVisibilityArray, error: createError } = await supabase
                         .from('checklist_visibility')
                         .insert([{
                             user_id: currentUser.id,
@@ -579,29 +583,33 @@
                             proof_of_funds_show: false,
                             accommodation_show: false
                         }])
-                        .single();
+                        .select();
                     
                     if (createError) throw createError;
-                    visibilityData = newVisibility;
+                    visibilityData = newVisibilityArray && newVisibilityArray.length > 0 ? newVisibilityArray[0] : null;
                 }
 
                 // Fetch checklist states from application_checklists
-                const { data: checklistData, error: checklistError } = await supabase
+                const { data: checklistDataArray, error: checklistError } = await supabase
                     .from('application_checklists')
                     .select('*')
-                    .eq('user_id', currentUser.id)
-                    .single();
+                    .eq('user_id', currentUser.id);
+                
+                // Get first result if exists
+                const checklistData = checklistDataArray && checklistDataArray.length > 0 ? checklistDataArray[0] : null;
 
                 if (checklistError && checklistError.code !== 'PGRST116') {
                     console.error('Error fetching checklist data:', checklistError);
                 }
 
                 // Fetch custom status messages
-                const { data: messageData, error: messageError } = await supabase
+                const { data: messageDataArray, error: messageError } = await supabase
                     .from('application_status_messages')
                     .select('*')
-                    .eq('user_id', currentUser.id)
-                    .single();
+                    .eq('user_id', currentUser.id);
+
+                // Get first result if exists
+                const messageData = messageDataArray && messageDataArray.length > 0 ? messageDataArray[0] : null;
 
                 if (messageError && messageError.code !== 'PGRST116') {
                     console.error('Error fetching message data:', messageError);
@@ -625,7 +633,7 @@
                         eligibilityCheck.classList.toggle('checked', checklistData.eligibility_checked);
                         eligibilityCheck.style.pointerEvents = 'none';
                     }
-                    if (eligibilityText && messageData) {
+                    if (eligibilityText && messageData && messageData.eligibility_message) {
                         eligibilityText.textContent = messageData.eligibility_message;
                     }
                 }
@@ -639,7 +647,7 @@
                         accommodationCheck.classList.toggle('checked', checklistData.accommodation_checked);
                         accommodationCheck.style.pointerEvents = 'none';
                     }
-                    if (accommodationText && messageData) {
+                    if (accommodationText && messageData && messageData.accommodation_message) {
                         accommodationText.textContent = messageData.accommodation_message;
                     }
                 }
@@ -653,7 +661,7 @@
                         medicalCheck.classList.toggle('checked', checklistData.medical_checked);
                         medicalCheck.style.pointerEvents = 'none';
                     }
-                    if (medicalText && messageData) {
+                    if (medicalText && messageData && messageData.medical_message) {
                         medicalText.textContent = messageData.medical_message;
                     }
                 }
@@ -667,7 +675,7 @@
                         documentCheck.classList.toggle('checked', checklistData.document_checked);
                         documentCheck.style.pointerEvents = 'none';
                     }
-                    if (documentText && messageData) {
+                    if (documentText && messageData && messageData.document_message) {
                         documentText.textContent = messageData.document_message;
                     }
                 }
@@ -681,7 +689,7 @@
                         interviewCheck.classList.toggle('checked', checklistData.interview_checked);
                         interviewCheck.style.pointerEvents = 'none';
                     }
-                    if (interviewText && messageData) {
+                    if (interviewText && messageData && messageData.interview_message) {
                         interviewText.textContent = messageData.interview_message;
                     }
                 }
@@ -696,21 +704,21 @@
                         fundsCheck.classList.toggle('checked', checklistData.proof_of_funds_checked);
                         fundsCheck.style.pointerEvents = 'none';
                     }
-                    if (fundsText && messageData) {
+                    if (fundsText && messageData && messageData.funds_message) {
                         fundsText.textContent = messageData.funds_message;
                     }
-                    if (fundsWarning && messageData) {
+                    if (fundsWarning && messageData && messageData.funds_warning) {
                         fundsWarning.textContent = messageData.funds_warning;
                     }
                 }
 
                 // Update application details - keep original application ID and type
-                document.getElementById('passportNo').textContent = applicationData ? applicationData.passport_no : '-';
-                document.getElementById('nationality').textContent = applicationData ? applicationData.nationality : '-';
-                document.getElementById('iccrcAgent').textContent = applicationData ? applicationData.iccrc_agent : '-';
-                document.getElementById('dob').textContent = applicationData ? new Date(applicationData.dob).toLocaleDateString() : '-';
+                document.getElementById('passportNo').textContent = appData ? appData.passport_no : '-';
+                document.getElementById('nationality').textContent = appData ? appData.nationality : '-';
+                document.getElementById('iccrcAgent').textContent = appData ? appData.iccrc_agent : '-';
 
-                document.getElementById('applicationStatus').textContent = currentUser.application_status || 'In Progress';
+                // Status is already handled by the status badge above, so this line is redundant and causes error
+                // document.getElementById('applicationStatus').textContent = currentUser.application_status || 'In Progress';
 
                 // Update portal button to include application ID
                 const portalBtn = document.getElementById('portalButton');
