@@ -266,16 +266,29 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Add a logout button (add this to your sidebar)
+// Add this function
 function addLogoutButton() {
-    const sidebar = document.querySelector('.sidebar');
-    const logoutBtn = document.createElement('a');
-    logoutBtn.className = 'nav-link';
-    logoutBtn.innerHTML = '<i class="bi bi-box-arrow-left"></i><span>Logout</span>';
-    logoutBtn.onclick = () => {
-        sessionStorage.removeItem('authenticated');
-        window.location.reload();
-    };
-    sidebar.appendChild(logoutBtn);
+    const container = document.querySelector('.sidebar');
+    if (!container) {
+        console.error('Sidebar not found');
+        return;
+    }
+    
+    const logoutButton = document.createElement('a');
+    logoutButton.className = 'nav-link';
+    logoutButton.href = '#';
+    logoutButton.innerHTML = '<i class="bi bi-box-arrow-right"></i><span>Logout</span>';
+    logoutButton.addEventListener('click', async function(e) {
+        e.preventDefault();
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+            console.error('Error signing out:', error);
+        } else {
+            window.location.href = 'index.html'; // Redirect to login page
+        }
+    });
+    
+    container.querySelector('.nav').appendChild(logoutButton);
 }
 // Call this after initializing your sidebar
 addLogoutButton();
