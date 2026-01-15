@@ -1,6 +1,6 @@
 // Supabase client initialization
-const supabaseUrl = 'https://mukeqzyftswyitizgxii.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11a2VxenlmdHN3eWl0aXpneGlpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDQ2OTIwOSwiZXhwIjoyMDYwMDQ1MjA5fQ.qZcMgBZCz86TXjvO7EqfcGneRYs4Zfc6HPWvicLwdNE';
+const supabaseUrl = 'https://phkdpxeamlynzunhiuso.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBoa2RweGVhbWx5bnp1bmhpdXNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0OTE1NDQsImV4cCI6MjA4NDA2NzU0NH0.ugPH6sqQ8pI9nP4T-qghFYaIq6AA9acGYsYfcA7MmOM';
 
 // Initialize the Supabase client - ONLY if not already initialized
 if (!window.supabase) {
