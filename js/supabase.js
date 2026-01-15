@@ -3,15 +3,17 @@ const supabaseUrl = 'https://phkdpxeamlynzunhiuso.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBoa2RweGVhbWx5bnp1bmhpdXNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0OTE1NDQsImV4cCI6MjA4NDA2NzU0NH0.ugPH6sqQ8pI9nP4T-qghFYaIq6AA9acGYsYfcA7MmOM';
 
 // Initialize the Supabase client - ONLY if not already initialized
-if (!window.supabase) {
-    window.supabase = createClient(supabaseUrl, supabaseKey);
-    console.log('✅ Supabase client initialized successfully');
+// Initialize the Supabase client - ONLY if not already initialized or not a client
+if (!window.supabase || typeof window.supabase.from !== 'function') {
+    try {
+        window.supabase = createClient(supabaseUrl, supabaseKey);
+        console.log('✅ Supabase client initialized successfully');
+    } catch (err) {
+        console.error('Failed to initialize Supabase client:', err);
+    }
 } else {
     console.log('⚠️ Supabase already initialized, using existing instance');
 }
-
-// Alias for easier access
-const supabase = window.supabase;
 
 // Add this function to your existing supabase.js file
 window.refreshUserData = async function() {
