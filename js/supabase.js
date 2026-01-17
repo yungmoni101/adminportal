@@ -10,33 +10,24 @@ function initializeSupabaseClient() {
         return;
     }
 
-    // Initialize the Supabase client - ONLY if not already initialized as a client
-    if (!window.supabaseClient || typeof window.supabaseClient.from !== 'function') {
-        try {
-            window.supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-            console.log('✅ Supabase client initialized successfully');
-        } catch (err) {
-            console.error('Failed to initialize Supabase client:', err);
-        }
-    } else {
-        console.log('⚠️ Supabase already initialized, using existing instance');
+    // Check if already initialized (has .from method means it's a client, not the library)
+    if (typeof window.supabase.from === 'function') {
+        console.log('⚠️ Supabase client already initialized');
+        return;
+    }
+
+    // Initialize the Supabase client and replace the library object with the client
+    try {
+        const supabaseLib = window.supabase; // Save reference to library
+        window.supabase = supabaseLib.createClient(supabaseUrl, supabaseKey);
+        console.log('✅ Supabase client initialized successfully');
+    } catch (err) {
+        console.error('Failed to initialize Supabase client:', err);
     }
 }
 
 // Start initialization
 initializeSupabaseClient();
-
-// Create a getter for easier access throughout the file
-Object.defineProperty(window, 'supabase', {
-    get() {
-        if (!window.supabaseClient) {
-            console.warn('⚠️ Supabase client not yet initialized. Waiting...');
-            return null;
-        }
-        return window.supabaseClient;
-    },
-    configurable: true
-});
 
 // Add this function to your existing supabase.js file
 window.refreshUserData = async function() {
@@ -45,7 +36,7 @@ window.refreshUserData = async function() {
 
     try {
         // Refresh user data from database
-        const { data: userData, error: userError } = await window.supabaseClient
+        const { data: userData, error: userError } = await window.supabase
             .from('users')
             .select('*')
             .eq('id', currentUser.id)
