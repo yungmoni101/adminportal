@@ -534,7 +534,12 @@
                     .from(table)
                     .select('*');
 
-                if (error) throw error;
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
+                }
+                
+                console.log(`Loaded ${data?.length || 0} records from ${table}:`, data);
 
                 const headers = Object.keys(tableSchemas[table]);
                 const headerRow = headers.map(h => `<th>${h.replace(/_/g, ' ').toUpperCase()}</th>`).join('') + '<th>ACTIONS</th>';
