@@ -731,7 +731,8 @@
                         return `<td>${cellContent || ''}</td>`;
                     }).join('');
 
-                    const recordId = record.id || record.application_id || record.checklist_id || record.deposit_id || record.withdrawal_id || record.binance_id || record.visibility_id || record.message_id || record.user_id;
+                    const idField = getIdField(table);
+                    const recordId = record[idField];
                     const actions = `
                         <td class="action-buttons">
                             <button class="btn btn-sm btn-primary" onclick='showEditModal(${JSON.stringify(record)})'>
