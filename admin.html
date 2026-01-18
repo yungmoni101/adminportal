@@ -474,7 +474,7 @@
                 e.preventDefault();
                 if (window.supabase) {
                     try {
-                        const { error } = await supabase.auth.signOut();
+                        const { error } = await window.supabase.auth.signOut();
                         if (error) {
                             console.error('Error signing out:', error);
                             alert('Logout failed: ' + error.message);
@@ -630,7 +630,7 @@
                     throw new Error('Supabase client not properly initialized');
                 }
                 
-                const { data, error } = await supabase
+                const { data, error } = await window.supabase
                     .from('users')
                     .select('id')
                     .eq('application_id', applicationId);
@@ -702,7 +702,7 @@
                     throw new Error('Supabase client not properly initialized. Please refresh the page.');
                 }
                 
-                const { data, error } = await supabase
+                const { data, error } = await window.supabase
                     .from(table)
                     .select('*');
 
@@ -887,7 +887,7 @@
             try {
                 console.log('Data to update:', data);
 
-                let query = supabase
+                let query = window.supabase
                     .from(currentTable)
                     .update(data);
 
@@ -909,7 +909,7 @@
 
                 if (currentTable === 'deposits' && data.status === 'Completed' && currentRecord.status !== 'Completed') {
                     console.log('Processing completed deposit...');
-                    const { data: depositData, error: depositError } = await supabase
+                    const { data: depositData, error: depositError } = await window.supabase
                         .from('deposits')
                         .select('amount, user_id')
                         .eq('deposit_id', recordId)
@@ -924,7 +924,7 @@
                     }
 
                     if (depositData) {
-                        const { data: userData, error: userError } = await supabase
+                        const { data: userData, error: userError } = await window.supabase
                             .from('users')
                             .select('balance')
                             .eq('id', depositData.user_id)
@@ -948,7 +948,7 @@
                             newBalance
                         });
 
-                        const { error: updateError } = await supabase
+                        const { error: updateError } = await window.supabase
                             .from('users')
                             .update({ balance: newBalance })
                             .eq('id', depositData.user_id);
@@ -1151,7 +1151,7 @@
                 }
 
                 console.log('Data to insert:', data);
-                const { error } = await supabase
+                const { error } = await window.supabase
                     .from(currentTable)
                     .insert([data]);
 
@@ -1188,7 +1188,7 @@
 
                     for (const table of tables) {
                         console.log(`Deleting related records from ${table}`);
-                        const { error } = await supabase
+                        const { error } = await window.supabase
                             .from(table)
                             .delete()
                             .eq('user_id', id);
@@ -1201,7 +1201,7 @@
                     }
                 }
 
-                const { error: deleteError } = await supabase
+                const { error: deleteError } = await window.supabase
                     .from(currentTable)
                     .delete()
                     .eq(idField, id);
@@ -1212,7 +1212,7 @@
                     return;
                 }
 
-                const { data: checkRecord, error: checkError } = await supabase
+                const { data: checkRecord, error: checkError } = await window.supabase
                     .from(currentTable)
                     .select('*')
                     .eq(idField, id)
