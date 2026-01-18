@@ -7,6 +7,101 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        /* Password Protection Overlay */
+        #passwordOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .password-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .password-container h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .password-container p {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        .password-input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .password-input-group input {
+            width: 100%;
+            padding: 15px 45px 15px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .password-input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .password-input-group i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+
+        .password-submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .password-submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .password-error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .admin-content {
+            display: none;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
         .sidebar {
             position: fixed;
             top: 0;
@@ -169,6 +264,25 @@
     </style>
 </head>
 <body class="bg-light">
+    <!-- Password Protection Overlay -->
+    <div id="passwordOverlay">
+        <div class="password-container">
+            <i class="bi bi-shield-lock" style="font-size: 48px; color: #667eea; margin-bottom: 20px;"></i>
+            <h2>Admin Access</h2>
+            <p>Enter the admin password to continue</p>
+            <div class="password-input-group">
+                <input type="password" id="adminPassword" placeholder="Enter password" autocomplete="off">
+                <i class="bi bi-lock-fill"></i>
+            </div>
+            <button class="password-submit-btn" onclick="checkPassword()">Access Admin Panel</button>
+            <div class="password-error" id="passwordError">
+                <i class="bi bi-exclamation-circle"></i> Incorrect password. Please try again.
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Content (Hidden Until Password Verified) -->
+    <div class="admin-content" id="adminContent">
     <!-- Sidebar -->
     <div class="sidebar">
         <h3 class="mb-4 text-center"><i class="bi bi-gear-fill"></i></h3>
@@ -275,6 +389,7 @@
             </div>
         </div>
     </div>
+    </div> <!-- End admin-content -->
 
     <!-- Scripts in correct order -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
@@ -285,6 +400,63 @@
         let currentTable = 'users';
         let editModal, addModal;
         let currentRecord = null;
+        const ADMIN_PASSWORD = 'marlains';
+
+        // Password Protection
+        function checkPassword() {
+            const passwordInput = document.getElementById('adminPassword');
+            const passwordError = document.getElementById('passwordError');
+            const enteredPassword = passwordInput.value;
+
+            if (enteredPassword === ADMIN_PASSWORD) {
+                // Store authentication in sessionStorage
+                sessionStorage.setItem('adminAuthenticated', 'true');
+                // Hide overlay and show admin content
+                document.getElementById('passwordOverlay').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+                passwordError.style.display = 'none';
+            } else {
+                // Show error
+                passwordError.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+                // Shake animation
+                passwordInput.parentElement.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    passwordInput.parentElement.style.animation = '';
+                }, 500);
+            }
+        }
+
+        // Allow Enter key to submit password
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('adminPassword');
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        checkPassword();
+                    }
+                });
+                passwordInput.focus();
+            }
+
+            // Check if already authenticated
+            if (sessionStorage.getItem('adminAuthenticated') === 'true') {
+                document.getElementById('passwordOverlay').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+            }
+        });
+
+        // Add shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+                20%, 40%, 60%, 80% { transform: translateX(10px); }
+            }
+        `;
+        document.head.appendChild(style);
 
         // Add logout button function
         function addLogoutButton() {
@@ -1063,6 +1235,56 @@
                 alert('Error in delete operation: ' + error.message);
             }
         }
+    </script>
+    </div> <!-- End admin-content -->
+
+    <script>
+        const ADMIN_PASSWORD = 'marlains';
+
+        // Password Protection
+        function checkPassword() {
+            const passwordInput = document.getElementById('adminPassword');
+            const passwordError = document.getElementById('passwordError');
+            const enteredPassword = passwordInput.value;
+
+            if (enteredPassword === ADMIN_PASSWORD) {
+                // Store authentication in sessionStorage
+                sessionStorage.setItem('adminAuthenticated', 'true');
+                // Hide overlay and show admin content
+                document.getElementById('passwordOverlay').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+                passwordError.style.display = 'none';
+            } else {
+                // Show error
+                passwordError.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+                // Shake animation
+                passwordInput.parentElement.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    passwordInput.parentElement.style.animation = '';
+                }, 500);
+            }
+        }
+
+        // Allow Enter key to submit password
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('adminPassword');
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        checkPassword();
+                    }
+                });
+                passwordInput.focus();
+            }
+
+            // Check if already authenticated
+            if (sessionStorage.getItem('adminAuthenticated') === 'true') {
+                document.getElementById('passwordOverlay').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+            }
+        });
     </script>
 </body>
 </html>
