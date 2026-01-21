@@ -444,7 +444,11 @@ hr {
             const sessionData = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
             const applicationId = sessionData.application_id;
 
+            console.log('Session data:', sessionData);
+            console.log('Application ID:', applicationId);
+
             if (!applicationId) {
+                alert('No application ID found. Please start from the home page.');
                 window.location.href = 'index.html';
                 return;
             }
@@ -519,6 +523,9 @@ hr {
                 setLoading(true);
 
                 try {
+                    console.log('Attempting to create account for:', email);
+                    console.log('Using application ID:', applicationId);
+
                     // First, check if email already exists
                     const { data: existingUser } = await supabase
                         .from('users')
@@ -542,14 +549,25 @@ hr {
                         .select()
                         .single();
 
-                    if (userError) throw userError;
+                    console.log('Update result:', userData);
+                    console.log('Update error:', userError);
+
+                    if (userError) {
+                        console.error('Supabase error:', userError);
+                        throw new Error(userError.message);
+                    }
+
+                    if (!userData) {
+                        throw new Error('No user found with application ID: ' + applicationId);
+                    }
 
                     // Store user data in session
-                    const sessionData = {
-                        ...JSON.parse(sessionStorage.getItem('currentUser') || '{}'),
-                        email: email
+                    const newSessionData = {
+                        ...sessionData,
+                        email: email,
+                        id: userData.id
                     };
-                    sessionStorage.setItem('currentUser', JSON.stringify(sessionData));
+                    sessionStorage.setItem('currentUser', JSON.stringify(newSessionData));
 
                     showPopup('Account created successfully!');
                     setTimeout(() => {
@@ -558,7 +576,7 @@ hr {
 
                 } catch (error) {
                     console.error('Error creating account:', error);
-                    showError('email-error', 'An error occurred while creating your account. Please try again.');
+                    showError('email-error', error.message || 'An error occurred while creating your account.');
                 } finally {
                     setLoading(false);
                 }
