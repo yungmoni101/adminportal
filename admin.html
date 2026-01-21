@@ -393,7 +393,7 @@
 
     <!-- Scripts in correct order -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="js/supabase.js" defer></script>
+    <script src="js/supabase.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
@@ -832,6 +832,14 @@
                             <label class="form-check-label" for="edit_${field}">${fieldLabel}</label>
                         </div>`;
                 }
+                else if (field.includes('message') || field.includes('warning')) {
+                    const value = record[field] !== null ? record[field] : '';
+                    inputHtml = `
+                        <div class="mb-3">
+                            <label class="form-label">${fieldLabel}</label>
+                            <textarea class="form-control" id="edit_${field}" rows="3">${value}</textarea>
+                        </div>`;
+                }
                 else {
                     const inputType = getInputType(type, field);
                     const value = record[field] !== null ? record[field] : '';
@@ -865,7 +873,7 @@
             console.log('Record ID:', recordId);
             console.log('ID Field:', idField);
 
-            const inputs = form.querySelectorAll('input, select');
+            const inputs = form.querySelectorAll('input, select, textarea');
             inputs.forEach(input => {
                 const fieldName = input.id.replace('edit_', '');
                 if (fieldName !== 'id' && fieldName !== 'id_field') {
@@ -1082,6 +1090,11 @@
                                 <label class="form-check-label" for="${field}">${fieldLabel}</label>
                             </div>
                         `;
+                    } else if (field.includes('message') || field.includes('warning')) {
+                        inputHtml = `
+                            <label class="form-label">${fieldLabel}</label>
+                            <textarea class="form-control" name="${field}" rows="3"></textarea>
+                        `;
                     } else {
                         inputHtml = `
                             <label class="form-label">${fieldLabel}</label>
@@ -1238,54 +1251,5 @@
         }
     </script>
     </div> <!-- End admin-content -->
-
-    <script>
-        const ADMIN_PASSWORD = 'marlains';
-
-        // Password Protection
-        function checkPassword() {
-            const passwordInput = document.getElementById('adminPassword');
-            const passwordError = document.getElementById('passwordError');
-            const enteredPassword = passwordInput.value;
-
-            if (enteredPassword === ADMIN_PASSWORD) {
-                // Store authentication in sessionStorage
-                sessionStorage.setItem('adminAuthenticated', 'true');
-                // Hide overlay and show admin content
-                document.getElementById('passwordOverlay').style.display = 'none';
-                document.getElementById('adminContent').style.display = 'block';
-                passwordError.style.display = 'none';
-            } else {
-                // Show error
-                passwordError.style.display = 'block';
-                passwordInput.value = '';
-                passwordInput.focus();
-                // Shake animation
-                passwordInput.parentElement.style.animation = 'shake 0.5s';
-                setTimeout(() => {
-                    passwordInput.parentElement.style.animation = '';
-                }, 500);
-            }
-        }
-
-        // Allow Enter key to submit password
-        document.addEventListener('DOMContentLoaded', function() {
-            const passwordInput = document.getElementById('adminPassword');
-            if (passwordInput) {
-                passwordInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        checkPassword();
-                    }
-                });
-                passwordInput.focus();
-            }
-
-            // Check if already authenticated
-            if (sessionStorage.getItem('adminAuthenticated') === 'true') {
-                document.getElementById('passwordOverlay').style.display = 'none';
-                document.getElementById('adminContent').style.display = 'block';
-            }
-        });
-    </script>
 </body>
 </html>
