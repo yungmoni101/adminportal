@@ -400,7 +400,23 @@
         let currentTable = 'users';
         let editModal, addModal;
         let currentRecord = null;
+        let currentTableData = []; // Store current table data
         const ADMIN_PASSWORD = 'marlains';
+
+        // Global functions accessible from onclick handlers
+        window.editRecord = function(index) {
+            if (currentTableData[index]) {
+                showEditModal(currentTableData[index]);
+            }
+        };
+
+        window.deleteRecord = function(index) {
+            if (currentTableData[index]) {
+                const idField = getIdField(currentTable);
+                const recordId = currentTableData[index][idField];
+                deleteRecordById(recordId);
+            }
+        };
 
         // Password Protection
         function checkPassword() {
@@ -712,12 +728,15 @@
                 }
                 
                 console.log(`Loaded ${data?.length || 0} records from ${table}:`, data);
+                
+                // Store data globally for button handlers
+                currentTableData = data || [];
 
                 const headers = Object.keys(tableSchemas[table]);
                 const headerRow = headers.map(h => `<th>${h.replace(/_/g, ' ').toUpperCase()}</th>`).join('') + '<th>ACTIONS</th>';
                 document.getElementById('tableHeaders').innerHTML = headerRow;
 
-                const rows = data.map(record => {
+                const rows = data.map((record, index) => {
                     const cells = headers.map(h => {
                         const fieldType = tableSchemas[table][h];
                         let cellContent = record[h];
@@ -733,12 +752,18 @@
 
                     const idField = getIdField(table);
                     const recordId = record[idField];
+                    
+                    // Debug logging
+                    if (!recordId) {
+                        console.error(`Missing ID for record in ${table}:`, record);
+                    }
+                    
                     const actions = `
                         <td class="action-buttons">
-                            <button class="btn btn-sm btn-primary" onclick='showEditModal(${JSON.stringify(record)})'>
+                            <button class="btn btn-sm btn-primary" onclick='window.editRecord(${index})'>
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteRecord('${recordId}')">
+                            <button class="btn btn-sm btn-danger" onclick='window.deleteRecord(${index})'>
                                 <i class="bi bi-trash"></i>
                             </button>
                         </td>
@@ -1181,7 +1206,7 @@
             }
         }
 
-        async function deleteRecord(id) {
+        async function deleteRecordById(id) {
             if (!confirm('Are you sure you want to delete this record? This will also delete all related data.')) return;
 
             // Check if supabase is available
@@ -1195,6 +1220,12 @@
             console.log('Attempting to delete from table:', currentTable);
             console.log('ID Field:', idField);
             console.log('ID:', id);
+            
+            if (!id) {
+                alert('Invalid record ID. Cannot delete.');
+                console.error('No ID provided for deletion');
+                return;
+            }
 
             try {
                 if (currentTable === 'users') {
