@@ -535,6 +535,7 @@ hr {
 
                     if (existingUser) {
                         showError('email-error', 'This email is already registered');
+                        setLoading(false);
                         return;
                     }
 
@@ -554,11 +555,15 @@ hr {
 
                     if (userError) {
                         console.error('Supabase error:', userError);
-                        throw new Error(userError.message);
+                        showError('email-error', userError.message);
+                        setLoading(false);
+                        return;
                     }
 
                     if (!userData) {
-                        throw new Error('No user found with application ID: ' + applicationId);
+                        showError('email-error', 'No user found with application ID: ' + applicationId);
+                        setLoading(false);
+                        return;
                     }
 
                     // Store user data in session
@@ -577,7 +582,6 @@ hr {
                 } catch (error) {
                     console.error('Error creating account:', error);
                     showError('email-error', error.message || 'An error occurred while creating your account.');
-                } finally {
                     setLoading(false);
                 }
             });
