@@ -1035,8 +1035,8 @@
                             throw userError;
                         }
 
-                        const currentBalance = userData.balance || 0;
-                        const withdrawalAmount = withdrawalData.amount || 0;
+                        const currentBalance = parseFloat(userData.balance) || 0;
+                        const withdrawalAmount = parseFloat(withdrawalData.amount) || 0;
                         const newBalance = currentBalance + withdrawalAmount;
 
                         console.log('Refund calculation:', {
