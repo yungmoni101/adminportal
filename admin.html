@@ -997,6 +997,13 @@
                 }
 
                 // Refund balance when withdrawal is marked as Failed
+                console.log('Checking withdrawal refund condition:', {
+                    currentTable,
+                    newStatus: data.status,
+                    oldStatus: currentRecord.status,
+                    shouldRefund: currentTable === 'withdrawals' && data.status === 'Failed' && currentRecord.status !== 'Failed'
+                });
+                
                 if (currentTable === 'withdrawals' && data.status === 'Failed' && currentRecord.status !== 'Failed') {
                     console.log('Processing failed withdrawal refund...');
                     const { data: withdrawalData, error: withdrawalError } = await window.supabase
