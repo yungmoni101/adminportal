@@ -996,6 +996,62 @@
                     }
                 }
 
+                // Refund balance when withdrawal is marked as Failed
+                if (currentTable === 'withdrawals' && data.status === 'Failed' && currentRecord.status !== 'Failed') {
+                    console.log('Processing failed withdrawal refund...');
+                    const { data: withdrawalData, error: withdrawalError } = await window.supabase
+                        .from('withdrawals')
+                        .select('amount, user_id')
+                        .eq('withdrawal_id', recordId)
+                        .single();
+
+                    console.log('Withdrawal data:', withdrawalData);
+                    console.log('Withdrawal error:', withdrawalError);
+
+                    if (withdrawalError) {
+                        console.error('Error fetching withdrawal details:', withdrawalError);
+                        throw withdrawalError;
+                    }
+
+                    if (withdrawalData) {
+                        const { data: userData, error: userError } = await window.supabase
+                            .from('users')
+                            .select('balance')
+                            .eq('id', withdrawalData.user_id)
+                            .single();
+
+                        console.log('User data:', userData);
+                        console.log('User error:', userError);
+
+                        if (userError) {
+                            console.error('Error fetching user balance:', userError);
+                            throw userError;
+                        }
+
+                        const currentBalance = userData.balance || 0;
+                        const withdrawalAmount = withdrawalData.amount || 0;
+                        const newBalance = currentBalance + withdrawalAmount;
+
+                        console.log('Refund calculation:', {
+                            currentBalance,
+                            withdrawalAmount,
+                            newBalance
+                        });
+
+                        const { error: updateError } = await window.supabase
+                            .from('users')
+                            .update({ balance: newBalance })
+                            .eq('id', withdrawalData.user_id);
+
+                        if (updateError) {
+                            console.error('Error updating user balance:', updateError);
+                            throw updateError;
+                        }
+
+                        console.log('User balance refunded successfully from', currentBalance, 'to', newBalance);
+                    }
+                }
+
                 console.log('Update successful');
                 editModal.hide();
                 await loadTableData(currentTable);
