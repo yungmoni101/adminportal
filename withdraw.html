@@ -413,7 +413,9 @@
                     return;
                 }
 
-                // Create withdrawal record
+                // Create withdrawal record - convert binance_id to number or null
+                const binanceIdValue = binanceIdInput.value.trim();
+                
                 const { data: withdrawal, error: withdrawalError } = await supabase
                     .from('withdrawals')
                     .insert([
@@ -422,9 +424,9 @@
                             amount: amount,
                             status: 'Pending',
                             date_time: new Date().toISOString(),
-                            binance_id: binanceIdInput.value,
-                            binance_name: binanceNameInput.value,
-                            wallet_name: walletNameInput.value
+                            binance_id: binanceIdValue ? parseInt(binanceIdValue) : null,
+                            binance_name: binanceNameInput.value.trim(),
+                            wallet_name: walletNameInput.value.trim()
                         }
                     ])
                     .select()
