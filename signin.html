@@ -300,9 +300,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = 'https://mukeqzyftswyitizgxii.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11a2VxenlmdHN3eWl0aXpneGlpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDQ2OTIwOSwiZXhwIjoyMDYwMDQ1MjA5fQ.qZcMgBZCz86TXjvO7EqfcGneRYs4Zfc6HPWvicLwdNE';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_URL = 'https://phkdpxeamlynzunhiuso.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBoa2RweGVhbWx5bnp1bmhpdXNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0OTE1NDQsImV4cCI6MjA4NDA2NzU0NH0.ugPH6sqQ8pI9nP4T-qghFYaIq6AA9acGYsYfcA7MmOM';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('loginForm');
@@ -371,7 +371,7 @@
 
                 try {
                     // Verify the email, password, and application_id combination
-                    const { data: userData, error: userError } = await supabase
+                    const { data: userData, error: userError } = await supabaseClient
                         .from('users')
                         .select('*')
                         .eq('email', email)
@@ -391,9 +391,8 @@
                         return;
                     }
 
-                    // Store user data in session
-                    sessionStorage.setItem('userId', userData.id);
-                    sessionStorage.setItem('userEmail', userData.email);
+                    // Store complete user data in session
+                    sessionStorage.setItem('currentUser', JSON.stringify(userData));
 
                     // Show success and redirect to deposit.html
                     showPopup('Sign in successful!');
