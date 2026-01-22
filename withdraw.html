@@ -430,6 +430,9 @@
                     .select()
                     .single();
 
+                console.log('Withdrawal created:', withdrawal);
+                console.log('Withdrawal error:', withdrawalError);
+
                 if (withdrawalError) throw withdrawalError;
 
                 // Update user balance
